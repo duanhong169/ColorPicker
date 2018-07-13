@@ -34,7 +34,7 @@ public class ColorWheelView extends View implements ColorObservable {
     private PointF currentPoint = new PointF();
     private int currentColor = Color.MAGENTA;
 
-    private ColorObservableSource source = new ColorObservableSource();
+    private ColorObservableEmitter emitter = new ColorObservableEmitter();
 
     public ColorWheelView(Context context) {
         this(context, null);
@@ -61,6 +61,16 @@ public class ColorWheelView extends View implements ColorObservable {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int maxWidth = MeasureSpec.getSize(widthMeasureSpec);
+        int maxHeight = MeasureSpec.getSize(heightMeasureSpec);
+
+        int width, height;
+        width = height = Math.min(maxWidth, maxHeight);
+        setMeasuredDimension(width, height);
+    }
+
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         int netWidth = w - getPaddingLeft() - getPaddingRight();
         int netHeight = h - getPaddingTop() - getPaddingBottom();
@@ -70,7 +80,7 @@ public class ColorWheelView extends View implements ColorObservable {
         setColor(currentColor);
 
         Shader hueShader = new SweepGradient(centerX, centerY,
-                new int[] {Color.RED, Color.MAGENTA, Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.RED},
+                new int[]{Color.RED, Color.MAGENTA, Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.RED},
                 null);
         huePaint.setShader(hueShader);
 
@@ -95,12 +105,12 @@ public class ColorWheelView extends View implements ColorObservable {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getActionMasked();
-        switch ( action ) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
                 float x = event.getX();
                 float y = event.getY();
-                source.notifyColor(getColorAtPoint(x, y), true);
+                emitter.onColor(getColorAtPoint(x, y), true);
                 updateSelector(x, y);
                 return true;
         }
@@ -124,7 +134,7 @@ public class ColorWheelView extends View implements ColorObservable {
         float radian = (float) (hsv[0] / 180f * Math.PI);
         updateSelector((float) (r * Math.cos(radian) + centerX), (float) (-r * Math.sin(radian) + centerY));
         currentColor = color;
-        source.notifyColor(color, false);
+        emitter.onColor(color, false);
     }
 
     private void updateSelector(float eventX, float eventY) {
@@ -141,12 +151,12 @@ public class ColorWheelView extends View implements ColorObservable {
     }
 
     @Override
-    public void registerListener(OnColorListener listener) {
-        source.registerListener(listener);
+    public void subscribe(ColorObserver observer) {
+        emitter.subscribe(observer);
     }
 
     @Override
-    public void unregisterListener(OnColorListener listener) {
-        source.unregisterListener(listener);
+    public void unsubscribe(ColorObserver observer) {
+        emitter.unsubscribe(observer);
     }
 }

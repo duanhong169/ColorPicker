@@ -2,7 +2,7 @@ package top.defaults.view;
 
 public interface ColorObservable {
 
-    void registerListener(OnColorListener listener);
+    void subscribe(ColorObserver observer);
 
-    void unregisterListener(OnColorListener listener);
+    void unsubscribe(ColorObserver observer);
 }

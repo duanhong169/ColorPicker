@@ -7,40 +7,47 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <top.defaults.view.ColorWheelView
-        android:id="@+id/colorWheel"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="16dp"
+    <top.defaults.view.ColorPickerView
+        android:id="@+id/colorPicker"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:enableAlpha="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-
-    <top.defaults.view.BrightnessSliderView
-        android:id="@+id/brightnessSlider"
-        android:layout_width="300dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/colorWheel"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
-
-    <top.defaults.view.AlphaSliderView
-        android:id="@+id/alphaSlider"
-        android:layout_width="300dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/brightnessSlider"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
 
     <View
         android:id="@+id/pickedColor"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintTop_toBottomOf="@+id/alphaSlider"
+        app:layout_constraintTop_toBottomOf="@+id/colorPicker"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/colorHex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="@+id/pickedColor"
+        app:layout_constraintBottom_toBottomOf="@+id/pickedColor"
+        app:layout_constraintLeft_toRightOf="@+id/pickedColor"/>
+
+    <top.defaults.view.TextButton
+        android:id="@+id/resetColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="reset"
+        android:textSize="20sp"
+        android:textColor="@color/colorAccent"
+        app:backgroundEffect="ripple"
+        app:layout_constraintTop_toTopOf="@+id/pickedColor"
+        app:layout_constraintBottom_toBottomOf="@+id/pickedColor"
+        app:layout_constraintRight_toLeftOf="@+id/pickedColor"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

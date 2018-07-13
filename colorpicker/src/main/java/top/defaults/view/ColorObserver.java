@@ -1,5 +1,5 @@
 package top.defaults.view;
 
-public interface OnColorListener {
+public interface ColorObserver {
     void onColor(int color, boolean fromUser);
 }

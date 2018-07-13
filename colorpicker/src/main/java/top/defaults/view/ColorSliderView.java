@@ -22,7 +22,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
     private float selectorSize;
     protected float currentValue;
 
-    private ColorObservableSource source = new ColorObservableSource();
+    private ColorObservableEmitter emitter = new ColorObservableEmitter();
 
     public ColorSliderView(Context context) {
         this(context, null);
@@ -49,7 +49,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         configurePaint(colorPaint);
         selectorPath.reset();
-        selectorSize = h * 0.33f;
+        selectorSize = h * 0.25f;
         selectorPath.moveTo(0, 0);
         selectorPath.lineTo(selectorSize * 2, 0);
         selectorPath.lineTo(selectorSize, selectorSize);
@@ -60,8 +60,8 @@ public abstract class ColorSliderView extends View implements ColorObservable {
     protected void onDraw(Canvas canvas) {
         float width = getWidth();
         float height = getHeight();
-        canvas.drawRect(selectorSize, height * 0.33f, width - selectorSize, height, colorPaint);
-        canvas.drawRect(selectorSize, height * 0.33f, width - selectorSize, height, borderPaint);
+        canvas.drawRect(selectorSize, selectorSize, width - selectorSize, height, colorPaint);
+        canvas.drawRect(selectorSize, selectorSize, width - selectorSize, height, borderPaint);
         selectorPath.offset(currentValue * (width - 2 * selectorSize), 0, currentSelectorPath);
         canvas.drawPath(currentSelectorPath, selectorPaint);
     }
@@ -74,18 +74,23 @@ public abstract class ColorSliderView extends View implements ColorObservable {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
                 updateValue(event.getX());
-                source.notifyColor(getColor(), true);
+                emitter.onColor(getColor(), true);
                 return true;
         }
         return super.onTouchEvent(event);
     }
 
-    public void setBaseColor(int color) {
+    void setBaseColor(int color, boolean fromUser) {
         baseColor = color;
         configurePaint(colorPaint);
-        currentValue = resolveValue(color);
+        if (!fromUser) {
+            // if not set by user (means programmatically), resolve currentValue from color value
+            currentValue = resolveValue(color);
+            emitter.onColor(color, false);
+        } else {
+            emitter.onColor(getColor(), true);
+        }
         invalidate();
-        source.notifyColor(getColor(), false);
     }
 
     private void updateValue(float eventX) {
@@ -104,31 +109,31 @@ public abstract class ColorSliderView extends View implements ColorObservable {
     protected abstract int getColor();
 
     @Override
-    public void registerListener(OnColorListener listener) {
-        source.registerListener(listener);
+    public void subscribe(ColorObserver observer) {
+        emitter.subscribe(observer);
     }
 
     @Override
-    public void unregisterListener(OnColorListener listener) {
-        source.unregisterListener(listener);
+    public void unsubscribe(ColorObserver observer) {
+        emitter.unsubscribe(observer);
     }
 
-    private OnColorListener bindListener = new OnColorListener() {
+    private ColorObserver bindListener = new ColorObserver() {
         @Override
         public void onColor(int color, boolean fromUser) {
-            setBaseColor(color);
+            setBaseColor(color, fromUser);
         }
     };
 
     public void bind(ColorObservable colorObservable) {
         if (colorObservable != null) {
-            colorObservable.registerListener(bindListener);
+            colorObservable.subscribe(bindListener);
         }
     }
 
     public void unbind(ColorObservable colorObservable) {
         if (colorObservable != null) {
-            colorObservable.unregisterListener(bindListener);
+            colorObservable.unsubscribe(bindListener);
         }
     }
 }
