@@ -8,34 +8,30 @@ import android.graphics.Shader;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
-public class BrightnessSliderView extends ColorSliderView {
+public class AlphaSliderView extends ColorSliderView {
 
-    public BrightnessSliderView(Context context) {
+    public AlphaSliderView(Context context) {
         super(context);
     }
 
-    public BrightnessSliderView(Context context, @Nullable AttributeSet attrs) {
+    public AlphaSliderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public BrightnessSliderView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public AlphaSliderView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override
     protected float resolveValue(int color) {
-        float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
-        return hsv[2];
+        return Color.alpha(color) / 255.f;
     }
 
     protected void configurePaint(Paint colorPaint) {
         float[] hsv = new float[3];
         Color.colorToHSV(baseColor, hsv);
-        hsv[2] = 0;
-        int startColor = Color.HSVToColor(hsv);
-        hsv[2] = 1;
-        int endColor = Color.HSVToColor(hsv);
+        int startColor = Color.HSVToColor(0, hsv);
+        int endColor = Color.HSVToColor(255, hsv);
         Shader shader = new LinearGradient(0, 0, getWidth(), getHeight(), startColor, endColor, Shader.TileMode.CLAMP);
         colorPaint.setShader(shader);
     }
@@ -43,7 +39,7 @@ public class BrightnessSliderView extends ColorSliderView {
     protected int getColor() {
         float[] hsv = new float[3];
         Color.colorToHSV(baseColor, hsv);
-        hsv[2] = currentValue;
-        return Color.HSVToColor(hsv);
+        int alpha = (int) (currentValue * 255);
+        return Color.HSVToColor(alpha, hsv);
     }
 }

@@ -17,7 +17,7 @@ import android.view.View;
 /**
  * HSV color wheel
  */
-public class ColorWheelView extends View {
+public class ColorWheelView extends View implements ColorObservable {
 
     private float radius;
     private float centerX;
@@ -32,7 +32,9 @@ public class ColorWheelView extends View {
     private float selectorRadiusPx = SELECTOR_RADIUS_DP * 3;
 
     private PointF currentPoint = new PointF();
-    private int currentColor = Color.BLACK;
+    private int currentColor = Color.MAGENTA;
+
+    private ColorObservableSource source = new ColorObservableSource();
 
     public ColorWheelView(Context context) {
         this(context, null);
@@ -98,7 +100,7 @@ public class ColorWheelView extends View {
             case MotionEvent.ACTION_MOVE:
                 float x = event.getX();
                 float y = event.getY();
-                notifyColor(getColorAtPoint(x, y), true);
+                source.notifyColor(getColorAtPoint(x, y), true);
                 updateSelector(x, y);
                 return true;
         }
@@ -121,7 +123,8 @@ public class ColorWheelView extends View {
         float r = hsv[1] * radius;
         float radian = (float) (hsv[0] / 180f * Math.PI);
         updateSelector((float) (r * Math.cos(radian) + centerX), (float) (-r * Math.sin(radian) + centerY));
-        notifyColor(color, false);
+        currentColor = color;
+        source.notifyColor(color, false);
     }
 
     private void updateSelector(float eventX, float eventY) {
@@ -137,16 +140,13 @@ public class ColorWheelView extends View {
         invalidate();
     }
 
-    private OnColorListener listener;
-
-    public void setListener(OnColorListener listener) {
-        this.listener = listener;
+    @Override
+    public void registerListener(OnColorListener listener) {
+        source.registerListener(listener);
     }
 
-    private void notifyColor(int color, boolean fromUser) {
-        currentColor = color;
-        if (listener != null) {
-            listener.onColor(color, fromUser);
-        }
+    @Override
+    public void unregisterListener(OnColorListener listener) {
+        source.unregisterListener(listener);
     }
 }
