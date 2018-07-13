@@ -53,7 +53,7 @@ public class ColorWheelView extends View {
         selectorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         selectorPaint.setColor(Color.BLACK);
         selectorPaint.setStyle(Paint.Style.STROKE);
-        selectorPaint.setStrokeWidth(0);
+        selectorPaint.setStrokeWidth(2);
 
         selectorRadiusPx = SELECTOR_RADIUS_DP * getResources().getDisplayMetrics().density;
     }
@@ -100,7 +100,6 @@ public class ColorWheelView extends View {
                 float y = event.getY();
                 notifyColor(getColorAtPoint(x, y), true);
                 updateSelector(x, y);
-                invalidate();
                 return true;
         }
         return super.onTouchEvent(event);
@@ -136,10 +135,6 @@ public class ColorWheelView extends View {
         currentPoint.x = x + centerX;
         currentPoint.y = y + centerY;
         invalidate();
-    }
-
-    public interface OnColorListener {
-        void onColor(int color, boolean fromUser);
     }
 
     private OnColorListener listener;
