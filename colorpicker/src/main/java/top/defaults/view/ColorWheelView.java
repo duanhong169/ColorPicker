@@ -75,6 +75,7 @@ public class ColorWheelView extends View implements ColorObservable {
         int netWidth = w - getPaddingLeft() - getPaddingRight();
         int netHeight = h - getPaddingTop() - getPaddingBottom();
         radius = Math.min(netWidth, netHeight) * 0.5f - selectorRadiusPx;
+        if (radius < 0) return;
         centerX = netWidth * 0.5f;
         centerY = netHeight * 0.5f;
         setColor(currentColor);
@@ -158,5 +159,10 @@ public class ColorWheelView extends View implements ColorObservable {
     @Override
     public void unsubscribe(ColorObserver observer) {
         emitter.unsubscribe(observer);
+    }
+
+    @Override
+    public int getColor() {
+        return currentColor;
     }
 }

@@ -40,7 +40,7 @@ public class BrightnessSliderView extends ColorSliderView {
         colorPaint.setShader(shader);
     }
 
-    protected int getColor() {
+    protected int assembleColor() {
         float[] hsv = new float[3];
         Color.colorToHSV(baseColor, hsv);
         hsv[2] = currentValue;

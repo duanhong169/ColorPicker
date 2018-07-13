@@ -74,7 +74,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
                 updateValue(event.getX());
-                emitter.onColor(getColor(), true);
+                emitter.onColor(assembleColor(), true);
                 return true;
         }
         return super.onTouchEvent(event);
@@ -88,7 +88,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
             currentValue = resolveValue(color);
             emitter.onColor(color, false);
         } else {
-            emitter.onColor(getColor(), true);
+            emitter.onColor(assembleColor(), true);
         }
         invalidate();
     }
@@ -106,7 +106,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
 
     protected abstract void configurePaint(Paint colorPaint);
 
-    protected abstract int getColor();
+    protected abstract int assembleColor();
 
     @Override
     public void subscribe(ColorObserver observer) {
@@ -116,6 +116,11 @@ public abstract class ColorSliderView extends View implements ColorObservable {
     @Override
     public void unsubscribe(ColorObserver observer) {
         emitter.unsubscribe(observer);
+    }
+
+    @Override
+    public int getColor() {
+        return assembleColor();
     }
 
     private ColorObserver bindListener = new ColorObserver() {

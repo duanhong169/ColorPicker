@@ -11,9 +11,12 @@ import android.widget.LinearLayout;
 public class ColorPickerView extends LinearLayout implements ColorObservable {
 
     private ColorWheelView colorWheelView;
+    private BrightnessSliderView brightnessSliderView;
+    private AlphaSliderView alphaSliderView;
     private ColorObservable observableOnDuty;
 
     private int initialColor = Color.BLACK;
+    private float density;
 
     public ColorPickerView(Context context) {
         this(context, null);
@@ -32,8 +35,8 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
         typedArray.recycle();
 
         colorWheelView = new ColorWheelView(context);
-        float density = getResources().getDisplayMetrics().density;
-        int margin =  (int) (8 * density);
+        density = getResources().getDisplayMetrics().density;
+        int margin = (int) (8 * density);
 
         {
             LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
@@ -42,20 +45,13 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
         }
 
         {
-            BrightnessSliderView brightnessSliderView = new BrightnessSliderView(context);
+            brightnessSliderView = new BrightnessSliderView(context);
             LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (24 * density));
             params.topMargin = margin * 2;
             addView(brightnessSliderView, params);
             brightnessSliderView.bind(colorWheelView);
 
-            if (enableAlpha) {
-                AlphaSliderView alphaSliderView = new AlphaSliderView(context);
-                addView(alphaSliderView, params);
-                alphaSliderView.bind(brightnessSliderView);
-                observableOnDuty = alphaSliderView;
-            } else {
-                observableOnDuty = brightnessSliderView;
-            }
+            setEnabledAlpha(enableAlpha);
         }
 
         setPadding(margin, margin, margin, margin);
@@ -64,6 +60,26 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
     public void setInitialColor(int color) {
         initialColor = color;
         colorWheelView.setColor(color);
+    }
+
+    public void setEnabledAlpha(boolean enable) {
+        if (enable) {
+            if (alphaSliderView == null) {
+                alphaSliderView = new AlphaSliderView(getContext());
+                LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) (24 * density));
+                params.topMargin = (int) (16 * density);
+                addView(alphaSliderView, params);
+                alphaSliderView.bind(brightnessSliderView);
+            }
+            observableOnDuty = alphaSliderView;
+        } else {
+            if (alphaSliderView != null) {
+                alphaSliderView.unbind(brightnessSliderView);
+                removeView(alphaSliderView);
+                alphaSliderView = null;
+            }
+            observableOnDuty = brightnessSliderView;
+        }
     }
 
     public void reset() {
@@ -78,5 +94,10 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
     @Override
     public void unsubscribe(ColorObserver observer) {
         observableOnDuty.unsubscribe(observer);
+    }
+
+    @Override
+    public int getColor() {
+        return observableOnDuty.getColor();
     }
 }

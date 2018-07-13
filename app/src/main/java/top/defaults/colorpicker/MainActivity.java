@@ -12,6 +12,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import top.defaults.view.ColorPickerPopup;
 import top.defaults.view.ColorPickerView;
 import top.defaults.view.ColorObserver;
 
@@ -26,21 +27,29 @@ public class MainActivity extends AppCompatActivity {
         colorPickerView.reset();
     }
 
+    @OnClick(R.id.pickedColor)
+    void popup(View v) {
+        new ColorPickerPopup.Builder(this)
+                .initialColor(colorPickerView.getColor())
+                .enableAlpha(true)
+                .build()
+                .show(v, (color, fromUser) -> {
+                    v.setBackgroundColor(color);
+                    colorPickerView.setInitialColor(color);
+                });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        colorPickerView.subscribe(new ColorObserver() {
-            @Override
-            public void onColor(int color, boolean fromUser) {
-                pickedColor.setBackgroundColor(color);
-                colorHex.setText(colorHex(color));
-            }
+        colorPickerView.subscribe((color, fromUser) -> {
+            pickedColor.setBackgroundColor(color);
+            colorHex.setText(colorHex(color));
         });
 
-//        colorPickerView.setInitialColor(ContextCompat.getColor(this, R.color.colorAccent));
         colorPickerView.setInitialColor(0x7F313C93);
     }
 

@@ -36,7 +36,7 @@ public class AlphaSliderView extends ColorSliderView {
         colorPaint.setShader(shader);
     }
 
-    protected int getColor() {
+    protected int assembleColor() {
         float[] hsv = new float[3];
         Color.colorToHSV(baseColor, hsv);
         int alpha = (int) (currentValue * 255);
