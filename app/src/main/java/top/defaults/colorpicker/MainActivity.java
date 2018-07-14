@@ -33,9 +33,17 @@ public class MainActivity extends AppCompatActivity {
                 .initialColor(colorPickerView.getColor())
                 .enableAlpha(true)
                 .build()
-                .show(v, (color, fromUser) -> {
-                    v.setBackgroundColor(color);
-                    colorPickerView.setInitialColor(color);
+                .show(v, new ColorPickerPopup.ColorPickerObserver() {
+                    @Override
+                    public void onColorPicked(int color) {
+                        v.setBackgroundColor(color);
+                        colorPickerView.setInitialColor(color);
+                    }
+
+                    @Override
+                    public void onColor(int color, boolean fromUser) {
+
+                    }
                 });
     }
 

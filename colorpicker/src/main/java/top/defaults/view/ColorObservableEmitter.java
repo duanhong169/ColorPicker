@@ -10,11 +10,13 @@ class ColorObservableEmitter implements ColorObservable {
 
     @Override
     public void subscribe(ColorObserver observer) {
+        if (observer == null) return;
         listeners.add(observer);
     }
 
     @Override
     public void unsubscribe(ColorObserver observer) {
+        if (observer == null) return;
         listeners.remove(observer);
     }
 

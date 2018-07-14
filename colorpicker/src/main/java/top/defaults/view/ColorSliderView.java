@@ -120,7 +120,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
 
     @Override
     public int getColor() {
-        return assembleColor();
+        return emitter.getColor();
     }
 
     private ColorObserver bindListener = new ColorObserver() {

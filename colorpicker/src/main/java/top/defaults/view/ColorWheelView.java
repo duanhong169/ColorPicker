@@ -163,6 +163,6 @@ public class ColorWheelView extends View implements ColorObservable {
 
     @Override
     public int getColor() {
-        return currentColor;
+        return emitter.getColor();
     }
 }
