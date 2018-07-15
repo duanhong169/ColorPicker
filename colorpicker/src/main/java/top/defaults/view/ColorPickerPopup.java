@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import java.util.Locale;
-
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class ColorPickerPopup {
@@ -21,11 +19,15 @@ public class ColorPickerPopup {
     private Context context;
     private int initialColor;
     private boolean enableAlpha;
+    private String okTitle;
+    private String cancelTitle;
 
     private ColorPickerPopup(Builder builder) {
         this.context = builder.context;
         this.initialColor = builder.initialColor;
         this.enableAlpha = builder.enableAlpha;
+        this.okTitle = builder.okTitle;
+        this.cancelTitle = builder.cancelTitle;
     }
 
     public void show(View parent, final ColorPickerObserver observer) {
@@ -34,42 +36,31 @@ public class ColorPickerPopup {
 
         @SuppressLint("InflateParams")
         View layout = inflater.inflate(R.layout.top_defaults_view_color_picker_popup, null);
-
-        View rootView = parent.getRootView();
-        int width = rootView.getWidth();
-        int popupWidth = (int) (width - 2 * 16 * context.getResources().getDisplayMetrics().density);
-
         final ColorPickerView colorPickerView = layout.findViewById(R.id.colorPickerView);
-        final PopupWindow popupWindow = new PopupWindow(layout, popupWidth,
+        final PopupWindow popupWindow = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         popupWindow.setOutsideTouchable(true);
         colorPickerView.setInitialColor(initialColor);
         colorPickerView.setEnabledAlpha(enableAlpha);
         colorPickerView.subscribe(observer);
-        layout.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        TextView cancel = layout.findViewById(R.id.cancel);
+        cancel.setText(cancelTitle);
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popupWindow.dismiss();
             }
         });
-        layout.findViewById(R.id.ok).setOnClickListener(new View.OnClickListener() {
+        TextView ok = layout.findViewById(R.id.ok);
+        ok.setText(okTitle);
+        ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popupWindow.dismiss();
                 if (observer != null) {
                     observer.onColorPicked(colorPickerView.getColor());
                 }
-            }
-        });
-        final View colorIndicator = layout.findViewById(R.id.colorIndicator);
-        final TextView colorHex = layout.findViewById(R.id.colorHex);
-
-        colorPickerView.subscribe(new ColorObserver() {
-            @Override
-            public void onColor(int color, boolean fromUser) {
-                colorIndicator.setBackgroundColor(color);
-                colorHex.setText(colorHex(color));
             }
         });
 
@@ -85,6 +76,8 @@ public class ColorPickerPopup {
         private Context context;
         private int initialColor = Color.MAGENTA;
         private boolean enableAlpha = false;
+        private String okTitle = "OK";
+        private String cancelTitle = "Cancel";
 
         public Builder(Context context) {
             this.context = context;
@@ -100,17 +93,19 @@ public class ColorPickerPopup {
             return this;
         }
 
+        public Builder okTitle(String title) {
+            okTitle = title;
+            return this;
+        }
+
+        public Builder cancelTitle(String title) {
+            cancelTitle = title;
+            return this;
+        }
+
         public ColorPickerPopup build() {
             return new ColorPickerPopup(this);
         }
-    }
-
-    private String colorHex(int color) {
-        int a = Color.alpha(color);
-        int r = Color.red(color);
-        int g = Color.green(color);
-        int b = Color.blue(color);
-        return String.format(Locale.getDefault(), "0x%02X%02X%02X%02X", a, r, g, b);
     }
 
     public interface ColorPickerObserver extends ColorObserver {
