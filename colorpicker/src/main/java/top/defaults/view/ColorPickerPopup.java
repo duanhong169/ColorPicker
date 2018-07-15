@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class ColorPickerPopup {
@@ -21,6 +23,8 @@ public class ColorPickerPopup {
     private boolean enableAlpha;
     private String okTitle;
     private String cancelTitle;
+    private boolean showIndicator;
+    private boolean showValue;
 
     private ColorPickerPopup(Builder builder) {
         this.context = builder.context;
@@ -28,6 +32,8 @@ public class ColorPickerPopup {
         this.enableAlpha = builder.enableAlpha;
         this.okTitle = builder.okTitle;
         this.cancelTitle = builder.cancelTitle;
+        this.showIndicator = builder.showIndicator;
+        this.showValue = builder.showValue;
     }
 
     public void show(View parent, final ColorPickerObserver observer) {
@@ -64,6 +70,24 @@ public class ColorPickerPopup {
             }
         });
 
+        final View colorIndicator = layout.findViewById(R.id.colorIndicator);
+        final TextView colorHex = layout.findViewById(R.id.colorHex);
+
+        colorIndicator.setVisibility(showIndicator ? View.VISIBLE : View.GONE);
+        colorHex.setVisibility(showValue ? View.VISIBLE : View.GONE);
+
+        colorPickerView.subscribe(new ColorObserver() {
+            @Override
+            public void onColor(int color, boolean fromUser) {
+                if (showIndicator) {
+                    colorIndicator.setBackgroundColor(color);
+                }
+                if (showValue) {
+                    colorHex.setText(colorHex(color));
+                }
+            }
+        });
+
         if(Build.VERSION.SDK_INT >= 21){
             popupWindow.setElevation(10.0f);
         }
@@ -78,6 +102,8 @@ public class ColorPickerPopup {
         private boolean enableAlpha = false;
         private String okTitle = "OK";
         private String cancelTitle = "Cancel";
+        private boolean showIndicator = true;
+        private boolean showValue = true;
 
         public Builder(Context context) {
             this.context = context;
@@ -103,9 +129,27 @@ public class ColorPickerPopup {
             return this;
         }
 
+        public Builder showIndicator(boolean show) {
+            showIndicator = show;
+            return this;
+        }
+
+        public Builder showValue(boolean show) {
+            showValue = show;
+            return this;
+        }
+
         public ColorPickerPopup build() {
             return new ColorPickerPopup(this);
         }
+    }
+
+    private String colorHex(int color) {
+        int a = Color.alpha(color);
+        int r = Color.red(color);
+        int g = Color.green(color);
+        int b = Color.blue(color);
+        return String.format(Locale.getDefault(), "0x%02X%02X%02X%02X", a, r, g, b);
     }
 
     public interface ColorPickerObserver extends ColorObserver {
