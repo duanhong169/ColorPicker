@@ -5,23 +5,14 @@ ext {
     bintrayName = 'colorpicker'
 
     publishedGroupId = 'com.github.duanhong169'
-    libraryName = 'ColorPicker'
     artifact = 'colorpicker'
 
     libraryDescription = 'A `ColorPicker` for android'
-
-    siteUrl = 'https://github.com/duanhong169/ColorPicker'
-    gitUrl = 'https://github.com/duanhong169/ColorPicker.git'
-
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
 
     developerId = 'duanhong169'
     developerName = 'Hong Duan'
     developerEmail = 'duanhong169@gmail.com'
-
-    licenseName = 'The MIT License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
 }
 
 android {
@@ -49,7 +40,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    api 'com.github.duanhong169:logger:1.0.0'
+    implementation 'com.github.duanhong169:logger:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
