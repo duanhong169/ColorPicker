@@ -8,11 +8,7 @@ ext {
     artifact = 'colorpicker'
 
     libraryDescription = 'A `ColorPicker` for android'
-    libraryVersion = '1.0.1'
-
-    developerId = 'duanhong169'
-    developerName = 'Hong Duan'
-    developerEmail = 'duanhong169@gmail.com'
+    libraryVersion = '1.0.3'
 }
 
 android {
