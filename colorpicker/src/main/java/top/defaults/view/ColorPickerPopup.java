@@ -92,6 +92,7 @@ public class ColorPickerPopup {
             popupWindow.setElevation(10.0f);
         }
 
+        popupWindow.setAnimationStyle(R.style.TopDefaultsViewColorPickerPopupAnimation);
         popupWindow.showAtLocation(parent, Gravity.CENTER, 0, 0);
     }
 
