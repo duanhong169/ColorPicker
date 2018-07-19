@@ -8,7 +8,7 @@ ext {
     artifact = 'colorpicker'
 
     libraryDescription = 'A `ColorPicker` for android'
-    libraryVersion = '1.0.4'
+    libraryVersion = '1.1.0'
 
     gitUrl = 'https://github.com/duanhong169/ColorPicker.git'
     siteUrl = 'https://github.com/duanhong169/ColorPicker'
