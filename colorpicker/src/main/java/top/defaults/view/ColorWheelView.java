@@ -25,7 +25,6 @@ public class ColorWheelView extends View implements ColorObservable {
 
     private Paint huePaint;
     private Paint saturationPaint;
-    private Paint brightnessPaint;
     private Paint selectorPaint;
 
     private static final int SELECTOR_RADIUS_DP = 9;
@@ -48,9 +47,6 @@ public class ColorWheelView extends View implements ColorObservable {
         super(context, attrs, defStyleAttr);
         huePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         saturationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        brightnessPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        brightnessPaint.setColor(Color.BLACK);
-        brightnessPaint.setAlpha(0);
 
         selectorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         selectorPaint.setColor(Color.BLACK);
@@ -94,7 +90,6 @@ public class ColorWheelView extends View implements ColorObservable {
     protected void onDraw(Canvas canvas) {
         canvas.drawCircle(centerX, centerY, radius, huePaint);
         canvas.drawCircle(centerX, centerY, radius, saturationPaint);
-        canvas.drawCircle(centerX, centerY, radius, brightnessPaint);
         canvas.drawLine(currentPoint.x - selectorRadiusPx, currentPoint.y,
                 currentPoint.x + selectorRadiusPx, currentPoint.y, selectorPaint);
         canvas.drawLine(currentPoint.x, currentPoint.y - selectorRadiusPx,
