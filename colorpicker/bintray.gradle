@@ -1,6 +1,8 @@
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.dcendents.android-maven'
 
+group = publishedGroupId // Maven Group ID for the artifact
 version = libraryVersion
 
 if (project.hasProperty("android")) { // Android libraries
@@ -29,6 +31,22 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives javadocJar
     archives sourcesJar
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+                groupId publishedGroupId
+                artifactId artifact
+
+                // Add your description here
+                description libraryDescription
+            }
+        }
+    }
 }
 
 publishing {

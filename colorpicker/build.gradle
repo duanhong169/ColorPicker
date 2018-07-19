@@ -8,7 +8,7 @@ ext {
     artifact = 'colorpicker'
 
     libraryDescription = 'A `ColorPicker` for android'
-    libraryVersion = '1.0.3'
+    libraryVersion = '1.0.4'
 }
 
 android {
@@ -42,5 +42,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
-apply from: 'installv1.gradle'
-apply from: 'bintrayv1.gradle'
+apply from: 'bintray.gradle'
