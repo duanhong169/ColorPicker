@@ -9,6 +9,13 @@ ext {
 
     libraryDescription = 'A `ColorPicker` for android'
     libraryVersion = '1.0.4'
+
+    gitUrl = 'https://github.com/duanhong169/ColorPicker.git'
+    siteUrl = 'https://github.com/duanhong169/ColorPicker'
+
+    licenseName = 'Apache License 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
 }
 
 android {
