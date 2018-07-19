@@ -1,4 +1,4 @@
-package top.defaults.view;
+package top.defaults.colorpicker;
 
 import android.content.Context;
 import android.graphics.Color;

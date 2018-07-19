@@ -1,4 +1,4 @@
-package top.defaults.colorpicker;
+package top.defaults.colorpickerapp;
 
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +11,8 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import top.defaults.view.ColorPickerPopup;
-import top.defaults.view.ColorPickerView;
+import top.defaults.colorpicker.ColorPickerPopup;
+import top.defaults.colorpicker.ColorPickerView;
 
 public class MainActivity extends AppCompatActivity {
 

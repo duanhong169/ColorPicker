@@ -1,4 +1,4 @@
-package top.defaults.colorpicker;
+package top.defaults.colorpickerapp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
-    <top.defaults.view.ColorPickerView
+    <top.defaults.colorpicker.ColorPickerView
         android:id="@+id/colorPickerView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

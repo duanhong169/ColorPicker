@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <top.defaults.view.ColorPickerView
+    <top.defaults.colorpicker.ColorPickerView
         android:id="@+id/colorPicker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

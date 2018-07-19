@@ -1,4 +1,4 @@
-package top.defaults.view;
+package top.defaults.colorpicker;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

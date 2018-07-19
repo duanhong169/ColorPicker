@@ -1,4 +1,4 @@
-package top.defaults.view;
+package top.defaults.colorpickerapp;
 
 import org.junit.Test;
 

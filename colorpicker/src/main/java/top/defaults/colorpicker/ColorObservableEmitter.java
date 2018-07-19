@@ -1,4 +1,4 @@
-package top.defaults.view;
+package top.defaults.colorpicker;
 
 import java.util.ArrayList;
 import java.util.List;
