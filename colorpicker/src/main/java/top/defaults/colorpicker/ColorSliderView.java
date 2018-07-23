@@ -19,7 +19,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
 
     private Path selectorPath;
     private Path currentSelectorPath = new Path();
-    private float selectorSize;
+    protected float selectorSize;
     protected float currentValue;
 
     private ColorObservableEmitter emitter = new ColorObservableEmitter();

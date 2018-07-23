@@ -1,14 +1,22 @@
 package top.defaults.colorpicker;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
+import top.defaults.checkerboarddrawable.CheckerboardDrawable;
+
 public class AlphaSliderView extends ColorSliderView {
+
+    private Bitmap backgroundBitmap;
+    private Canvas backgroundCanvas;
 
     public AlphaSliderView(Context context) {
         super(context);
@@ -20,6 +28,23 @@ public class AlphaSliderView extends ColorSliderView {
 
     public AlphaSliderView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        backgroundBitmap = Bitmap.createBitmap((int) (w - 2 * selectorSize),
+                (int) (h - selectorSize), Bitmap.Config.ARGB_8888);
+        backgroundCanvas = new Canvas(backgroundBitmap);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        Drawable drawable = CheckerboardDrawable.create();
+        drawable.setBounds(0, 0, backgroundCanvas.getWidth(), backgroundCanvas.getHeight());
+        drawable.draw(backgroundCanvas);
+        canvas.drawBitmap(backgroundBitmap, selectorSize, selectorSize, null);
+        super.onDraw(canvas);
     }
 
     @Override
