@@ -1,6 +1,9 @@
 package top.defaults.colorpickerapp;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -25,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         colorPickerView.reset();
     }
 
-    @OnClick(R.id.pickedColor)
+    @OnClick({R.id.pickedColor, R.id.colorHex})
     void popup(View v) {
         new ColorPickerPopup.Builder(this)
                 .initialColor(colorPickerView.getColor())
@@ -58,9 +61,17 @@ public class MainActivity extends AppCompatActivity {
         colorPickerView.subscribe((color, fromUser) -> {
             pickedColor.setBackgroundColor(color);
             colorHex.setText(colorHex(color));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getWindow().setStatusBarColor(color);
+            }
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setBackgroundDrawable(new ColorDrawable(color));
+            }
         });
 
-        colorPickerView.setInitialColor(0x7F313C93);
+        colorPickerView.setInitialColor(0xFFFF8000);
     }
 
     private String colorHex(int color) {

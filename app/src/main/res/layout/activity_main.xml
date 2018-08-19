@@ -25,13 +25,14 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <TextView
+    <top.defaults.view.TextButton
         android:id="@+id/colorHex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:textSize="16sp"
+        app:underline="true"
         app:layout_constraintTop_toTopOf="@+id/pickedColor"
         app:layout_constraintBottom_toBottomOf="@+id/pickedColor"
         app:layout_constraintLeft_toRightOf="@+id/pickedColor"/>
