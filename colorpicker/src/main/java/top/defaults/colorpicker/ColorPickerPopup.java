@@ -36,6 +36,10 @@ public class ColorPickerPopup {
         this.showValue = builder.showValue;
     }
 
+    public void show(final ColorPickerObserver observer) {
+        show(null, observer);
+    }
+
     public void show(View parent, final ColorPickerObserver observer) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
         if (inflater == null) return;
@@ -93,6 +97,7 @@ public class ColorPickerPopup {
         }
 
         popupWindow.setAnimationStyle(R.style.TopDefaultsViewColorPickerPopupAnimation);
+        if (parent == null) parent = layout;
         popupWindow.showAtLocation(parent, Gravity.CENTER, 0, 0);
     }
 

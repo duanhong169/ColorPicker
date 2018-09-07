@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
                 .showIndicator(true)
                 .showValue(true)
                 .build()
-                .show(v, new ColorPickerPopup.ColorPickerObserver() {
+                .show(new ColorPickerPopup.ColorPickerObserver() {
                     @Override
                     public void onColorPicked(int color) {
                         v.setBackgroundColor(color);
