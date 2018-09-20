@@ -19,6 +19,9 @@ import top.defaults.colorpicker.ColorPickerView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String SAVED_STATE_KEY_COLOR = "saved_state_key_color";
+    private static final int INITIAL_COLOR = 0xFFFF8000;
+
     @BindView(R.id.colorPicker) ColorPickerView colorPickerView;
     @BindView(R.id.pickedColor) View pickedColor;
     @BindView(R.id.colorHex) TextView colorHex;
@@ -71,7 +74,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        colorPickerView.setInitialColor(0xFFFF8000);
+        int color = INITIAL_COLOR;
+        if (savedInstanceState != null) {
+            color = savedInstanceState.getInt(SAVED_STATE_KEY_COLOR, INITIAL_COLOR);
+        }
+        colorPickerView.setInitialColor(color);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVED_STATE_KEY_COLOR, colorPickerView.getColor());
     }
 
     private String colorHex(int color) {
