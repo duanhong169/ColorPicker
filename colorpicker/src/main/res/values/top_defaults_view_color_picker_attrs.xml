@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="ColorPickerView">
         <attr name="enableAlpha" format="boolean"/>
+        <attr name="enableBrightness" format="boolean"/>
     </declare-styleable>
 </resources>

@@ -36,6 +36,7 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColorPickerView);
         boolean enableAlpha = typedArray.getBoolean(R.styleable.ColorPickerView_enableAlpha, false);
+        boolean enableBrightness = typedArray.getBoolean(R.styleable.ColorPickerView_enableBrightness, true);
         typedArray.recycle();
 
         colorWheelView = new ColorWheelView(context);
@@ -51,13 +52,7 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
         }
 
         {
-            brightnessSliderView = new BrightnessSliderView(context);
-            LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, sliderHeight);
-
-            params.topMargin = sliderMargin;
-            addView(brightnessSliderView, params);
-            brightnessSliderView.bind(colorWheelView);
-
+            setEnabledBrightness(enableBrightness);
             setEnabledAlpha(enableAlpha);
         }
 
@@ -103,6 +98,26 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
         colorWheelView.setColor(color);
     }
 
+    public void setEnabledBrightness(boolean enable) {
+        if (enable) {
+            if (brightnessSliderView == null) {
+                brightnessSliderView = new BrightnessSliderView(getContext());
+                LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, sliderHeight);
+                params.topMargin = sliderMargin;
+                addView(brightnessSliderView, 1, params);
+                brightnessSliderView.bind(colorWheelView);
+            }
+            updateObservableOnDuty();
+        } else {
+            if (brightnessSliderView != null) {
+                brightnessSliderView.unbind();
+                removeView(brightnessSliderView);
+                brightnessSliderView = null;
+            }
+            updateObservableOnDuty();
+        }
+    }
+
     public void setEnabledAlpha(boolean enable) {
         if (enable) {
             if (alphaSliderView == null) {
@@ -110,16 +125,33 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
                 LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, sliderHeight);
                 params.topMargin = sliderMargin;
                 addView(alphaSliderView, params);
-                alphaSliderView.bind(brightnessSliderView);
+
+                ColorObservable bindTo = brightnessSliderView;
+                if (bindTo == null) {
+                    bindTo = colorWheelView;
+                }
+                alphaSliderView.bind(bindTo);
             }
-            observableOnDuty = alphaSliderView;
+            updateObservableOnDuty();
         } else {
             if (alphaSliderView != null) {
-                alphaSliderView.unbind(brightnessSliderView);
+                alphaSliderView.unbind();
                 removeView(alphaSliderView);
                 alphaSliderView = null;
             }
-            observableOnDuty = brightnessSliderView;
+            updateObservableOnDuty();
+        }
+    }
+
+    private void updateObservableOnDuty() {
+        if (brightnessSliderView == null && alphaSliderView == null) {
+            observableOnDuty = colorWheelView;
+        } else {
+            if (alphaSliderView != null) {
+                observableOnDuty = alphaSliderView;
+            } else {
+                observableOnDuty = brightnessSliderView;
+            }
         }
     }
 

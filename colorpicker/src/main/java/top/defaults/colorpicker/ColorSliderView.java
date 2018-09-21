@@ -130,15 +130,25 @@ public abstract class ColorSliderView extends View implements ColorObservable {
         }
     };
 
+    private ColorObservable boundObservable;
+
     public void bind(ColorObservable colorObservable) {
         if (colorObservable != null) {
             colorObservable.subscribe(bindListener);
         }
+        boundObservable = colorObservable;
     }
 
     public void unbind(ColorObservable colorObservable) {
         if (colorObservable != null) {
             colorObservable.unsubscribe(bindListener);
+        }
+    }
+
+    public void unbind() {
+        if (boundObservable != null) {
+            boundObservable.unsubscribe(bindListener);
+            boundObservable = null;
         }
     }
 }
