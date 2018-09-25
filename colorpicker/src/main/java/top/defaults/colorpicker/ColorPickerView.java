@@ -8,6 +8,9 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import top.defaults.logger.Logger;
 
 public class ColorPickerView extends LinearLayout implements ColorObservable {
@@ -68,10 +71,11 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
         }
 
         int desiredWidth = maxHeight - (getPaddingTop() + getPaddingBottom()) + (getPaddingLeft() + getPaddingRight());
-        if (alphaSliderView == null) {
+        if (brightnessSliderView != null) {
             desiredWidth -= (sliderMargin + sliderHeight);
-        } else {
-            desiredWidth -= 2 * (sliderMargin + sliderHeight);
+        }
+        if (alphaSliderView != null){
+            desiredWidth -= (sliderMargin + sliderHeight);
         }
 
         if (BuildConfig.DEBUG) {
@@ -80,10 +84,11 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
 
         int width = Math.min(maxWidth, desiredWidth);
         int height = width - (getPaddingLeft() + getPaddingRight()) + (getPaddingTop() + getPaddingBottom());
-        if (alphaSliderView == null) {
+        if (brightnessSliderView != null) {
             height += (sliderMargin + sliderHeight);
-        } else {
-            height += 2 * (sliderMargin + sliderHeight);
+        }
+        if (alphaSliderView != null) {
+            height += (sliderMargin + sliderHeight);
         }
 
         if (BuildConfig.DEBUG) {
@@ -105,8 +110,8 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
                 LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, sliderHeight);
                 params.topMargin = sliderMargin;
                 addView(brightnessSliderView, 1, params);
-                brightnessSliderView.bind(colorWheelView);
             }
+            brightnessSliderView.bind(colorWheelView);
             updateObservableOnDuty();
         } else {
             if (brightnessSliderView != null) {
@@ -115,6 +120,10 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
                 brightnessSliderView = null;
             }
             updateObservableOnDuty();
+        }
+
+        if (alphaSliderView != null) {
+            setEnabledAlpha(true);
         }
     }
 
@@ -125,13 +134,13 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
                 LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, sliderHeight);
                 params.topMargin = sliderMargin;
                 addView(alphaSliderView, params);
-
-                ColorObservable bindTo = brightnessSliderView;
-                if (bindTo == null) {
-                    bindTo = colorWheelView;
-                }
-                alphaSliderView.bind(bindTo);
             }
+
+            ColorObservable bindTo = brightnessSliderView;
+            if (bindTo == null) {
+                bindTo = colorWheelView;
+            }
+            alphaSliderView.bind(bindTo);
             updateObservableOnDuty();
         } else {
             if (alphaSliderView != null) {
@@ -144,6 +153,12 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
     }
 
     private void updateObservableOnDuty() {
+        if (observableOnDuty != null) {
+            for (ColorObserver observer: observers) {
+                observableOnDuty.unsubscribe(observer);
+            }
+        }
+
         if (brightnessSliderView == null && alphaSliderView == null) {
             observableOnDuty = colorWheelView;
         } else {
@@ -153,20 +168,31 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
                 observableOnDuty = brightnessSliderView;
             }
         }
+
+        if (observers != null) {
+            for (ColorObserver observer : observers) {
+                observableOnDuty.subscribe(observer);
+                observer.onColor(observableOnDuty.getColor(), false);
+            }
+        }
     }
 
     public void reset() {
         colorWheelView.setColor(initialColor);
     }
 
+    List<ColorObserver> observers = new ArrayList<>();
+
     @Override
     public void subscribe(ColorObserver observer) {
         observableOnDuty.subscribe(observer);
+        observers.add(observer);
     }
 
     @Override
     public void unsubscribe(ColorObserver observer) {
         observableOnDuty.unsubscribe(observer);
+        observers.remove(observer);
     }
 
     @Override

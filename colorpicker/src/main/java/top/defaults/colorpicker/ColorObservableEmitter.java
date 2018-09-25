@@ -5,19 +5,19 @@ import java.util.List;
 
 class ColorObservableEmitter implements ColorObservable {
 
-    private List<ColorObserver> listeners = new ArrayList<>();
+    private List<ColorObserver> observers = new ArrayList<>();
     private int color;
 
     @Override
     public void subscribe(ColorObserver observer) {
         if (observer == null) return;
-        listeners.add(observer);
+        observers.add(observer);
     }
 
     @Override
     public void unsubscribe(ColorObserver observer) {
         if (observer == null) return;
-        listeners.remove(observer);
+        observers.remove(observer);
     }
 
     @Override
@@ -27,8 +27,8 @@ class ColorObservableEmitter implements ColorObservable {
 
     void onColor(int color, boolean fromUser) {
         this.color = color;
-        for (ColorObserver listener : listeners) {
-            listener.onColor(color, fromUser);
+        for (ColorObserver observer : observers) {
+            observer.onColor(color, fromUser);
         }
     }
 

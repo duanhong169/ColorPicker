@@ -20,7 +20,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
     private Path selectorPath;
     private Path currentSelectorPath = new Path();
     protected float selectorSize;
-    protected float currentValue;
+    protected float currentValue = 1f;
 
     private ColorObservableEmitter emitter = new ColorObservableEmitter();
 
@@ -123,7 +123,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
         return emitter.getColor();
     }
 
-    private ColorObserver bindListener = new ColorObserver() {
+    private ColorObserver bindObserver = new ColorObserver() {
         @Override
         public void onColor(int color, boolean fromUser) {
             setBaseColor(color, fromUser);
@@ -134,20 +134,15 @@ public abstract class ColorSliderView extends View implements ColorObservable {
 
     public void bind(ColorObservable colorObservable) {
         if (colorObservable != null) {
-            colorObservable.subscribe(bindListener);
+            colorObservable.subscribe(bindObserver);
+            setBaseColor(colorObservable.getColor(), true);
         }
         boundObservable = colorObservable;
     }
 
-    public void unbind(ColorObservable colorObservable) {
-        if (colorObservable != null) {
-            colorObservable.unsubscribe(bindListener);
-        }
-    }
-
     public void unbind() {
         if (boundObservable != null) {
-            boundObservable.unsubscribe(bindListener);
+            boundObservable.unsubscribe(bindObserver);
             boundObservable = null;
         }
     }
