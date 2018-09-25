@@ -24,6 +24,7 @@ dependencies {
 ```java
 new ColorPickerPopup.Builder(this)
         .initialColor(Color.RED) // Set initial color
+        .enableBrightness(true) // Enable brightness slider or not
         .enableAlpha(true) // Enable alpha slider or not
         .okTitle("Choose")
         .cancelTitle("Cancel")
@@ -52,6 +53,7 @@ new ColorPickerPopup.Builder(this)
     android:id="@+id/colorPicker"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
+    app:enableBrightness="true"
     app:enableAlpha="true"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
