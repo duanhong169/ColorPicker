@@ -49,7 +49,7 @@ new ColorPickerPopup.Builder(this)
 * 将`ColorPickerView`添加到需要的`layout.xml`文件中：
 
 ```xml
-<top.defaults.view.ColorPickerView
+<top.defaults.colorpicker.ColorPickerView
     android:id="@+id/colorPicker"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
