@@ -11,7 +11,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-public abstract class ColorSliderView extends View implements ColorObservable {
+public abstract class ColorSliderView extends View implements ColorObservable, Updatable {
     protected int baseColor = Color.WHITE;
     private Paint colorPaint;
     private Paint borderPaint;
@@ -23,6 +23,7 @@ public abstract class ColorSliderView extends View implements ColorObservable {
     protected float currentValue = 1f;
 
     private ColorObservableEmitter emitter = new ColorObservableEmitter();
+    private ThrottledTouchEventHandler handler = new ThrottledTouchEventHandler(this);
 
     public ColorSliderView(Context context) {
         this(context, null);
@@ -73,11 +74,19 @@ public abstract class ColorSliderView extends View implements ColorObservable {
         switch ( action ) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-                updateValue(event.getX());
-                emitter.onColor(assembleColor(), true);
+                handler.onTouchEvent(event);
+                return true;
+            case MotionEvent.ACTION_UP:
+                update(event);
                 return true;
         }
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public void update(MotionEvent event) {
+        updateValue(event.getX());
+        emitter.onColor(assembleColor(), true);
     }
 
     void setBaseColor(int color, boolean fromUser) {

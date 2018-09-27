@@ -17,7 +17,7 @@ import android.view.View;
 /**
  * HSV color wheel
  */
-public class ColorWheelView extends View implements ColorObservable {
+public class ColorWheelView extends View implements ColorObservable, Updatable {
 
     private float radius;
     private float centerX;
@@ -34,6 +34,7 @@ public class ColorWheelView extends View implements ColorObservable {
     private int currentColor = Color.MAGENTA;
 
     private ColorObservableEmitter emitter = new ColorObservableEmitter();
+    private ThrottledTouchEventHandler handler = new ThrottledTouchEventHandler(this);
 
     public ColorWheelView(Context context) {
         this(context, null);
@@ -104,13 +105,21 @@ public class ColorWheelView extends View implements ColorObservable {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
-                float x = event.getX();
-                float y = event.getY();
-                emitter.onColor(getColorAtPoint(x, y), true);
-                updateSelector(x, y);
+                handler.onTouchEvent(event);
+                return true;
+            case MotionEvent.ACTION_UP:
+                update(event);
                 return true;
         }
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public void update(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+        emitter.onColor(getColorAtPoint(x, y), true);
+        updateSelector(x, y);
     }
 
     private int getColorAtPoint(float eventX, float eventY) {
