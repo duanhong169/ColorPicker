@@ -2,36 +2,31 @@ package top.defaults.colorpicker;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.RadialGradient;
-import android.graphics.Shader;
-import android.graphics.SweepGradient;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import static top.defaults.colorpicker.Constants.SELECTOR_RADIUS_DP;
 
 /**
  * HSV color wheel
  */
-public class ColorWheelView extends View implements ColorObservable, Updatable {
+public class ColorWheelView extends FrameLayout implements ColorObservable, Updatable {
 
     private float radius;
     private float centerX;
     private float centerY;
 
-    private Paint huePaint;
-    private Paint saturationPaint;
-    private Paint selectorPaint;
-
-    private static final int SELECTOR_RADIUS_DP = 9;
     private float selectorRadiusPx = SELECTOR_RADIUS_DP * 3;
 
     private PointF currentPoint = new PointF();
     private int currentColor = Color.MAGENTA;
+
+    private ColorWheelSelector selector;
 
     private ColorObservableEmitter emitter = new ColorObservableEmitter();
     private ThrottledTouchEventHandler handler = new ThrottledTouchEventHandler(this);
@@ -46,15 +41,22 @@ public class ColorWheelView extends View implements ColorObservable, Updatable {
 
     public ColorWheelView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        huePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        saturationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-        selectorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        selectorPaint.setColor(Color.BLACK);
-        selectorPaint.setStyle(Paint.Style.STROKE);
-        selectorPaint.setStrokeWidth(2);
-
         selectorRadiusPx = SELECTOR_RADIUS_DP * getResources().getDisplayMetrics().density;
+
+        {
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            ColorWheelPalette palette = new ColorWheelPalette(context);
+            int padding = (int) selectorRadiusPx;
+            palette.setPadding(padding, padding, padding, padding);
+            addView(palette, layoutParams);
+        }
+
+        {
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            selector = new ColorWheelSelector(context);
+            selector.setSelectorRadiusPx(selectorRadiusPx);
+            addView(selector, layoutParams);
+        }
     }
 
     @Override
@@ -64,7 +66,8 @@ public class ColorWheelView extends View implements ColorObservable, Updatable {
 
         int width, height;
         width = height = Math.min(maxWidth, maxHeight);
-        setMeasuredDimension(width, height);
+        super.onMeasure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
     }
 
     @Override
@@ -76,26 +79,6 @@ public class ColorWheelView extends View implements ColorObservable, Updatable {
         centerX = netWidth * 0.5f;
         centerY = netHeight * 0.5f;
         setColor(currentColor);
-
-        Shader hueShader = new SweepGradient(centerX, centerY,
-                new int[]{Color.RED, Color.MAGENTA, Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.RED},
-                null);
-        huePaint.setShader(hueShader);
-
-        Shader saturationShader = new RadialGradient(centerX, centerY, radius,
-                Color.WHITE, 0x00FFFFFF, Shader.TileMode.CLAMP);
-        saturationPaint.setShader(saturationShader);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        canvas.drawCircle(centerX, centerY, radius, huePaint);
-        canvas.drawCircle(centerX, centerY, radius, saturationPaint);
-        canvas.drawLine(currentPoint.x - selectorRadiusPx, currentPoint.y,
-                currentPoint.x + selectorRadiusPx, currentPoint.y, selectorPaint);
-        canvas.drawLine(currentPoint.x, currentPoint.y - selectorRadiusPx,
-                currentPoint.x, currentPoint.y + selectorRadiusPx, selectorPaint);
-        canvas.drawCircle(currentPoint.x, currentPoint.y, selectorRadiusPx * 0.66f, selectorPaint);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -152,7 +135,7 @@ public class ColorWheelView extends View implements ColorObservable, Updatable {
         }
         currentPoint.x = x + centerX;
         currentPoint.y = y + centerY;
-        invalidate();
+        selector.setCurrentPoint(currentPoint);
     }
 
     @Override
