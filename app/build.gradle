@@ -28,7 +28,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.github.duanhong169:text-button:1.0.5'
     implementation 'com.jakewharton:butterknife:8.8.1'
-//    implementation 'com.github.duanhong169:colorpicker:1.1.4'
+//    implementation 'com.github.duanhong169:colorpicker:1.1.5'
     implementation project(':colorpicker')
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     testImplementation 'junit:junit:4.12'
