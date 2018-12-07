@@ -12,7 +12,7 @@ class ThrottledTouchEventHandler {
         this(Constants.EVENT_MIN_INTERVAL, updatable);
     }
 
-    ThrottledTouchEventHandler(int minInterval, Updatable updatable) {
+    private ThrottledTouchEventHandler(int minInterval, Updatable updatable) {
         this.minInterval = minInterval;
         this.updatable = updatable;
     }
