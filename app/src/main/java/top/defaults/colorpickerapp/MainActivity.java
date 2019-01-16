@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
                 .show(new ColorPickerPopup.ColorPickerObserver() {
                     @Override
                     public void onColorPicked(int color) {
-                        v.setBackgroundColor(color);
                         colorPickerView.setInitialColor(color);
                     }
                 });
