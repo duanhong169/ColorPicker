@@ -3,5 +3,6 @@
     <declare-styleable name="ColorPickerView">
         <attr name="enableAlpha" format="boolean"/>
         <attr name="enableBrightness" format="boolean"/>
+        <attr name="onlyUpdateOnTouchEventUp" format="boolean"/>
     </declare-styleable>
 </resources>

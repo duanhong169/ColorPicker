@@ -25,6 +25,7 @@ public class ColorWheelView extends FrameLayout implements ColorObservable, Upda
 
     private PointF currentPoint = new PointF();
     private int currentColor = Color.MAGENTA;
+    private boolean onlyUpdateOnTouchEventUp;
 
     private ColorWheelSelector selector;
 
@@ -78,7 +79,7 @@ public class ColorWheelView extends FrameLayout implements ColorObservable, Upda
         if (radius < 0) return;
         centerX = netWidth * 0.5f;
         centerY = netHeight * 0.5f;
-        setColor(currentColor);
+        setColor(currentColor, false);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -101,7 +102,10 @@ public class ColorWheelView extends FrameLayout implements ColorObservable, Upda
     public void update(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        emitter.onColor(getColorAtPoint(x, y), true);
+        boolean isTouchUpEvent = event.getActionMasked() == MotionEvent.ACTION_UP;
+        if (!onlyUpdateOnTouchEventUp || isTouchUpEvent) {
+            emitter.onColor(getColorAtPoint(x, y), true, isTouchUpEvent);
+        }
         updateSelector(x, y);
     }
 
@@ -115,14 +119,20 @@ public class ColorWheelView extends FrameLayout implements ColorObservable, Upda
         return Color.HSVToColor(hsv);
     }
 
-    public void setColor(int color) {
+    public void setOnlyUpdateOnTouchEventUp(boolean onlyUpdateOnTouchEventUp) {
+        this.onlyUpdateOnTouchEventUp = onlyUpdateOnTouchEventUp;
+    }
+
+    public void setColor(int color, boolean shouldPropagate) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
         float r = hsv[1] * radius;
         float radian = (float) (hsv[0] / 180f * Math.PI);
         updateSelector((float) (r * Math.cos(radian) + centerX), (float) (-r * Math.sin(radian) + centerY));
         currentColor = color;
-        emitter.onColor(color, false);
+        if (!onlyUpdateOnTouchEventUp) {
+            emitter.onColor(color, false, shouldPropagate);
+        }
     }
 
     private void updateSelector(float eventX, float eventY) {

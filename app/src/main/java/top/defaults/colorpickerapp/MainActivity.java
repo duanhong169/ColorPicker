@@ -40,17 +40,13 @@ public class MainActivity extends AppCompatActivity {
                 .cancelTitle("Cancel")
                 .showIndicator(true)
                 .showValue(true)
+                .onlyUpdateOnTouchEventUp(true)
                 .build()
                 .show(new ColorPickerPopup.ColorPickerObserver() {
                     @Override
                     public void onColorPicked(int color) {
                         v.setBackgroundColor(color);
                         colorPickerView.setInitialColor(color);
-                    }
-
-                    @Override
-                    public void onColor(int color, boolean fromUser) {
-
                     }
                 });
     }
@@ -61,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        colorPickerView.subscribe((color, fromUser) -> {
+        colorPickerView.subscribe((color, fromUser, shouldPropagate) -> {
             pickedColor.setBackgroundColor(color);
             colorHex.setText(colorHex(color));
 

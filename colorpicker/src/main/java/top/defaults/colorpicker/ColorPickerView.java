@@ -19,6 +19,7 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
     private BrightnessSliderView brightnessSliderView;
     private AlphaSliderView alphaSliderView;
     private ColorObservable observableOnDuty;
+    private boolean onlyUpdateOnTouchEventUp;
 
     private int initialColor = Color.BLACK;
 
@@ -40,6 +41,7 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ColorPickerView);
         boolean enableAlpha = typedArray.getBoolean(R.styleable.ColorPickerView_enableAlpha, false);
         boolean enableBrightness = typedArray.getBoolean(R.styleable.ColorPickerView_enableBrightness, true);
+        onlyUpdateOnTouchEventUp = typedArray.getBoolean(R.styleable.ColorPickerView_onlyUpdateOnTouchEventUp, false);
         typedArray.recycle();
 
         colorWheelView = new ColorWheelView(context);
@@ -48,18 +50,19 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
         sliderMargin = 2 * margin;
         sliderHeight = (int) (24 * density);
 
-        {
-            LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            addView(colorWheelView, params);
-        }
+        LinearLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        addView(colorWheelView, params);
 
-        {
-            setEnabledBrightness(enableBrightness);
-            setEnabledAlpha(enableAlpha);
-        }
+        setEnabledBrightness(enableBrightness);
+        setEnabledAlpha(enableAlpha);
 
         setPadding(margin, margin, margin, margin);
+    }
+
+    public void setOnlyUpdateOnTouchEventUp(boolean onlyUpdateOnTouchEventUp) {
+        this.onlyUpdateOnTouchEventUp = onlyUpdateOnTouchEventUp;
+        updateObservableOnDuty();
     }
 
     @Override
@@ -100,7 +103,7 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
 
     public void setInitialColor(int color) {
         initialColor = color;
-        colorWheelView.setColor(color);
+        colorWheelView.setColor(color, true);
     }
 
     public void setEnabledBrightness(boolean enable) {
@@ -159,26 +162,37 @@ public class ColorPickerView extends LinearLayout implements ColorObservable {
             }
         }
 
+        colorWheelView.setOnlyUpdateOnTouchEventUp(false);
+        if (brightnessSliderView != null) {
+            brightnessSliderView.setOnlyUpdateOnTouchEventUp(false);
+        }
+        if (alphaSliderView != null) {
+            alphaSliderView.setOnlyUpdateOnTouchEventUp(false);
+        }
+
         if (brightnessSliderView == null && alphaSliderView == null) {
             observableOnDuty = colorWheelView;
+            colorWheelView.setOnlyUpdateOnTouchEventUp(onlyUpdateOnTouchEventUp);
         } else {
             if (alphaSliderView != null) {
                 observableOnDuty = alphaSliderView;
+                alphaSliderView.setOnlyUpdateOnTouchEventUp(onlyUpdateOnTouchEventUp);
             } else {
                 observableOnDuty = brightnessSliderView;
+                brightnessSliderView.setOnlyUpdateOnTouchEventUp(onlyUpdateOnTouchEventUp);
             }
         }
 
         if (observers != null) {
             for (ColorObserver observer : observers) {
                 observableOnDuty.subscribe(observer);
-                observer.onColor(observableOnDuty.getColor(), false);
+                observer.onColor(observableOnDuty.getColor(), false, true);
             }
         }
     }
 
     public void reset() {
-        colorWheelView.setColor(initialColor);
+        colorWheelView.setColor(initialColor, true);
     }
 
     List<ColorObserver> observers = new ArrayList<>();

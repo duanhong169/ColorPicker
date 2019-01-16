@@ -25,10 +25,10 @@ class ColorObservableEmitter implements ColorObservable {
         return color;
     }
 
-    void onColor(int color, boolean fromUser) {
+    void onColor(int color, boolean fromUser, boolean shouldPropagate) {
         this.color = color;
         for (ColorObserver observer : observers) {
-            observer.onColor(color, fromUser);
+            observer.onColor(color, fromUser, shouldPropagate);
         }
     }
 

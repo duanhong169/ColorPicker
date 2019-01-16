@@ -26,6 +26,7 @@ public class ColorPickerPopup {
     private String cancelTitle;
     private boolean showIndicator;
     private boolean showValue;
+    private boolean onlyUpdateOnTouchEventUp;
 
     private ColorPickerPopup(Builder builder) {
         this.context = builder.context;
@@ -36,6 +37,7 @@ public class ColorPickerPopup {
         this.cancelTitle = builder.cancelTitle;
         this.showIndicator = builder.showIndicator;
         this.showValue = builder.showValue;
+        this.onlyUpdateOnTouchEventUp = builder.onlyUpdateOnTouchEventUp;
     }
 
     public void show(final ColorPickerObserver observer) {
@@ -56,6 +58,7 @@ public class ColorPickerPopup {
         colorPickerView.setInitialColor(initialColor);
         colorPickerView.setEnabledBrightness(enableBrightness);
         colorPickerView.setEnabledAlpha(enableAlpha);
+        colorPickerView.setOnlyUpdateOnTouchEventUp(onlyUpdateOnTouchEventUp);
         colorPickerView.subscribe(observer);
         TextView cancel = layout.findViewById(R.id.cancel);
         cancel.setText(cancelTitle);
@@ -83,9 +86,15 @@ public class ColorPickerPopup {
         colorIndicator.setVisibility(showIndicator ? View.VISIBLE : View.GONE);
         colorHex.setVisibility(showValue ? View.VISIBLE : View.GONE);
 
+        if (showIndicator) {
+            colorIndicator.setBackgroundColor(initialColor);
+        }
+        if (showValue) {
+            colorHex.setText(colorHex(initialColor));
+        }
         colorPickerView.subscribe(new ColorObserver() {
             @Override
-            public void onColor(int color, boolean fromUser) {
+            public void onColor(int color, boolean fromUser, boolean shouldPropagate) {
                 if (showIndicator) {
                     colorIndicator.setBackgroundColor(color);
                 }
@@ -114,6 +123,7 @@ public class ColorPickerPopup {
         private String cancelTitle = "Cancel";
         private boolean showIndicator = true;
         private boolean showValue = true;
+        private boolean onlyUpdateOnTouchEventUp = false;
 
         public Builder(Context context) {
             this.context = context;
@@ -155,6 +165,11 @@ public class ColorPickerPopup {
             return this;
         }
 
+        public Builder onlyUpdateOnTouchEventUp(boolean only) {
+            onlyUpdateOnTouchEventUp = only;
+            return this;
+        }
+
         public ColorPickerPopup build() {
             return new ColorPickerPopup(this);
         }
@@ -168,7 +183,12 @@ public class ColorPickerPopup {
         return String.format(Locale.getDefault(), "0x%02X%02X%02X%02X", a, r, g, b);
     }
 
-    public interface ColorPickerObserver extends ColorObserver {
-        void onColorPicked(int color);
+    public abstract static class ColorPickerObserver implements ColorObserver {
+        public abstract void onColorPicked(int color);
+
+        @Override
+        public final void onColor(int color, boolean fromUser, boolean shouldPropagate) {
+
+        }
     }
 }

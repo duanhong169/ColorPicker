@@ -21,6 +21,7 @@ public abstract class ColorSliderView extends View implements ColorObservable, U
     private Path currentSelectorPath = new Path();
     protected float selectorSize;
     protected float currentValue = 1f;
+    private boolean onlyUpdateOnTouchEventUp;
 
     private ColorObservableEmitter emitter = new ColorObservableEmitter();
     private ThrottledTouchEventHandler handler = new ThrottledTouchEventHandler(this);
@@ -71,7 +72,7 @@ public abstract class ColorSliderView extends View implements ColorObservable, U
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getActionMasked();
-        switch ( action ) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:
                 handler.onTouchEvent(event);
@@ -86,18 +87,27 @@ public abstract class ColorSliderView extends View implements ColorObservable, U
     @Override
     public void update(MotionEvent event) {
         updateValue(event.getX());
-        emitter.onColor(assembleColor(), true);
+        boolean isTouchUpEvent = event.getActionMasked() == MotionEvent.ACTION_UP;
+        if (!onlyUpdateOnTouchEventUp || isTouchUpEvent) {
+            emitter.onColor(assembleColor(), true, isTouchUpEvent);
+        }
     }
 
-    void setBaseColor(int color, boolean fromUser) {
+    void setBaseColor(int color, boolean fromUser, boolean shouldPropagate) {
         baseColor = color;
         configurePaint(colorPaint);
+        int targetColor = color;
         if (!fromUser) {
             // if not set by user (means programmatically), resolve currentValue from color value
             currentValue = resolveValue(color);
-            emitter.onColor(color, false);
         } else {
-            emitter.onColor(assembleColor(), true);
+            targetColor = assembleColor();
+        }
+
+        if (!onlyUpdateOnTouchEventUp) {
+            emitter.onColor(targetColor, fromUser, shouldPropagate);
+        } else if (shouldPropagate) {
+            emitter.onColor(targetColor, fromUser, true);
         }
         invalidate();
     }
@@ -132,10 +142,14 @@ public abstract class ColorSliderView extends View implements ColorObservable, U
         return emitter.getColor();
     }
 
+    public void setOnlyUpdateOnTouchEventUp(boolean onlyUpdateOnTouchEventUp) {
+        this.onlyUpdateOnTouchEventUp = onlyUpdateOnTouchEventUp;
+    }
+
     private ColorObserver bindObserver = new ColorObserver() {
         @Override
-        public void onColor(int color, boolean fromUser) {
-            setBaseColor(color, fromUser);
+        public void onColor(int color, boolean fromUser, boolean shouldPropagate) {
+            setBaseColor(color, fromUser, shouldPropagate);
         }
     };
 
@@ -144,7 +158,7 @@ public abstract class ColorSliderView extends View implements ColorObservable, U
     public void bind(ColorObservable colorObservable) {
         if (colorObservable != null) {
             colorObservable.subscribe(bindObserver);
-            setBaseColor(colorObservable.getColor(), true);
+            setBaseColor(colorObservable.getColor(), true, true);
         }
         boundObservable = colorObservable;
     }
