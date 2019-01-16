@@ -19,6 +19,7 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 public class ColorPickerPopup {
 
     private Context context;
+    private PopupWindow popupWindow;
     private int initialColor;
     private boolean enableBrightness;
     private boolean enableAlpha;
@@ -51,7 +52,7 @@ public class ColorPickerPopup {
         @SuppressLint("InflateParams")
         View layout = inflater.inflate(R.layout.top_defaults_view_color_picker_popup, null);
         final ColorPickerView colorPickerView = layout.findViewById(R.id.colorPickerView);
-        final PopupWindow popupWindow = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT,
+        popupWindow = new PopupWindow(layout, ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         popupWindow.setOutsideTouchable(true);
@@ -111,6 +112,12 @@ public class ColorPickerPopup {
         popupWindow.setAnimationStyle(R.style.TopDefaultsViewColorPickerPopupAnimation);
         if (parent == null) parent = layout;
         popupWindow.showAtLocation(parent, Gravity.CENTER, 0, 0);
+    }
+
+    public void dismiss() {
+        if (popupWindow != null) {
+            popupWindow.dismiss();
+        }
     }
 
     public static class Builder {
